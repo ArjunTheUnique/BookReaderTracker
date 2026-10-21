@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gate 5B — M2 v1.0 Dual PASS</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ee; --surface:#fffdfa; --surface-2:#f1ebe3;
+    --border:rgba(43,38,34,0.14); --border-soft:rgba(43,38,34,0.08);
+    --text:#2b2622; --text-dim:#7a7168;
+    --terra:#c2410c; --terra-soft:#f6e3d8;
+    --sage:#4d7c0f; --sage-soft:#e6efd6;
+    --amber:#b45309; --amber-soft:#f7ecd4;
+    --slate:#334155; --slate-soft:#e2e8f0;
+    --plum:#7c2d4e; --plum-soft:#f3dde6;
+    --font-body:'Instrument Serif',Georgia,serif;
+    --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(circle at 8% 3%, rgba(77,124,15,0.06), transparent 38%),
+      radial-gradient(circle at 96% 98%, rgba(194,65,12,0.04), transparent 36%),
+      var(--bg);
+    color:var(--text); font-family:var(--font-body); padding:42px 46px 34px; width:1500px;}
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--sage);font-weight:700;display:flex;align-items:center;gap:12px;}
+  .kicker::after{content:"";flex:1;height:1px;background:var(--border);}
+  h1{font-size:37px;line-height:1.05;margin:11px 0 4px;font-weight:400;}
+  h1 em{font-style:italic;color:var(--sage);}
+  .sub{font-size:15.5px;color:var(--text-dim);max-width:1200px;line-height:1.5;margin-bottom:22px;}
+
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+  .stack{background:rgba(255,255,255,0.45);border:2px solid rgba(77,124,15,0.4);border-radius:16px;padding:16px 18px;position:relative;}
+  .stack::before{content:"M2 SLOTTED INTO THE GROWING STACK";position:absolute;top:-11px;left:22px;background:var(--bg);font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--sage);padding:2px 11px;border:1px solid rgba(77,124,15,0.4);border-radius:6px;}
+  .tier{display:flex;gap:9px;margin-bottom:9px;}
+  .box{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 11px;border-top:3px solid var(--sage);}
+  .box.pending{border-top-color:var(--slate);opacity:0.7;}
+  .box .bhead{display:flex;align-items:center;gap:7px;}
+  .box .mid{font-family:var(--font-mono);font-size:11px;font-weight:700;color:#fff;background:var(--sage);padding:1px 7px;border-radius:5px;}
+  .box.pending .mid{background:var(--slate);}
+  .box .bn{font-size:14.5px;font-weight:600;}
+  .box .bt{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);margin-top:4px;}
+  .wire{text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin:2px 0 7px;}
+  .wire .v{color:var(--sage);font-weight:700;}
+
+  .stamps{display:grid;grid-template-columns:1fr;gap:13px;}
+  .stampcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 17px;border-top:5px solid var(--sage);}
+  .stampcard .st{display:inline-block;font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:0.14em;color:#fff;background:var(--sage);padding:5px 14px;border-radius:7px;margin-bottom:8px;}
+  .stampcard h3{font-size:16.5px;font-weight:600;margin-bottom:8px;}
+  .stampcard .row{display:flex;gap:9px;font-size:13.5px;line-height:1.45;margin-bottom:5px;align-items:flex-start;}
+  .stampcard .row .mk{font-family:var(--font-mono);font-weight:700;color:var(--sage);flex:none;width:16px;}
+  .stampcard .row code{font-family:var(--font-mono);font-size:11.5px;background:var(--surface-2);padding:0 4px;border-radius:4px;}
+  .indep{background:linear-gradient(180deg,#fffdfa,#f1f6e7);border:2px solid rgba(77,124,15,0.5);border-radius:12px;padding:12px 16px;margin-top:4px;}
+  .indep .it{font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:var(--sage);letter-spacing:0.06em;}
+  .indep .id2{font-size:13.5px;color:var(--text);line-height:1.45;margin-top:4px;}
+
+  .found{margin-top:18px;background:linear-gradient(180deg,#fffdfa,#fdf8ee);border:1px solid rgba(180,83,9,0.25);border-left:4px solid var(--amber);border-radius:12px;padding:14px 18px;}
+  .found .fh{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:9px;}
+  .found .fi{font-size:14px;line-height:1.5;margin-bottom:6px;color:var(--text);}
+  .found .fi code{font-family:var(--font-mono);font-size:11.5px;background:var(--surface-2);padding:0 4px;border-radius:4px;}
+  .found .fi b{color:var(--terra);}
+
+  .foot{margin-top:22px;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim);border-top:1px solid var(--border);padding-top:13px;}
+  .verdict{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.1em;color:#fff;background:var(--sage);border-radius:6px;padding:6px 12px;}
+</style>
+</head>
+<body>
+  <div class="kicker">Gate 5B · M2 Book Intake — Dual Audit (v1.0)</div>
+  <h1>M2 <em>PASSES</em> — and I reproduced it myself, twice over</h1>
+  <p class="sub">The Builder ran M2's suite and M1's regression on Flutter 3.47.7 — 5/5 each. I then rebuilt the whole project from the delivered files in my own sandbox and got the <b>identical result</b>. Two independent environments now agree.</p>
+
+  <div class="wrap">
+    <div class="stack">
+      <div class="tier"><div class="box"><div class="bhead"><span class="mid">M1</span><span class="bn">Library Store — v1.0.2 · VERIFIED</span></div><div class="bt">5/5 · only DB writer · re-ran green (no regression)</div></div></div>
+      <div class="wire">▼ <span class="v">M2 calls M1 add_book · passes idempotency key through</span></div>
+      <div class="tier"><div class="box"><div class="bhead"><span class="mid">M2</span><span class="bn">Book Intake — v1.0 · VERIFIED</span></div><div class="bt">5/5 · ports: FileAccess · PageExtractor · LibraryStorePort</div></div></div>
+      <div class="wire">▼ D3 import pipe · C3 source branch · C7 permission gate</div>
+      <div class="tier"><div class="box pending"><div class="bhead"><span class="mid">M3</span><span class="bn">Progress Logger</span></div><div class="bt">not yet issued</div></div><div class="box pending"><div class="bhead"><span class="mid">M4</span><span class="bn">Daily Engine</span></div><div class="bt">not yet issued</div></div><div class="box pending"><div class="bhead"><span class="mid">M5</span><span class="bn">Widget Bridge</span></div><div class="bt">not yet issued</div></div></div>
+      <div class="tier"><div class="box pending"><div class="bhead"><span class="mid">M6</span><span class="bn">Backup Vault</span></div><div class="bt">not yet issued</div></div><div class="box pending"><div class="bhead"><span class="mid">M7</span><span class="bn">Grid Presenter</span></div><div class="bt">not yet issued</div></div><div class="box"><div class="bhead"><span class="mid">DB</span><span class="bn">SQLite via Drift</span></div><div class="bt">books · progress_log · daily_summary</div></div></div>
+    </div>
+
+    <div class="stamps">
+      <div class="stampcard">
+        <span class="st">PASS</span>
+        <h3>Paper &amp; Manifest Audit</h3>
+        <div class="row"><span class="mk">✓</span><span>Paths verbatim; Control/Data separation intact</span></div>
+        <div class="row"><span class="mk">✓</span><span>Zero secrets; <code>.env.example</code> correct; Version Stamp v1.0</span></div>
+        <div class="row"><span class="mk">✓</span><span>All pins exact; <code>file_picker 13.1.0</code> verified published</span></div>
+        <div class="row"><span class="mk">✓</span><span>Platform packages isolated in an adapter file the tests never import</span></div>
+      </div>
+      <div class="stampcard">
+        <span class="st">PASS</span>
+        <h3>5-Part Runtime Verification</h3>
+        <div class="row"><span class="mk">✓</span><span>Builder: real <code>flutter test</code> — M2 5/5, M1 regression 5/5</span></div>
+        <div class="row"><span class="mk">✓</span><span>Architect: independently rebuilt &amp; re-ran — identical result</span></div>
+      </div>
+      <div class="indep">
+        <div class="it">INDEPENDENTLY RE-VERIFIED · 2nd ENVIRONMENT</div>
+        <div class="id2">Rebuilt <code>shelf_app</code> from the delivered files alone in the Architect's sandbox: <code>pub get</code> → <code>build_runner</code> → <code>flutter test</code>. M1 <b>+5</b>, M2 <b>+5</b> — matching the Builder line-for-line.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="found">
+    <div class="fh">Findings the Builder surfaced (credit where due)</div>
+    <div class="fi"><b>F1.</b> <code>pdfx</code> is a Flutter plugin and cannot run inside <code>flutter test</code> — proved empirically. M2 hides extraction behind an injectable <code>PageExtractor</code> port, which is the only reason the suite can run at all.</div>
+    <div class="fi"><b>F2.</b> Dart is nominally typed, so M1 doesn't automatically satisfy M2's <code>LibraryStorePort</code>; a one-line adapter wraps it. Recommended: declare the port in <code>shared/contracts.dart</code> at M1's next bump.</div>
+    <div class="fi"><b>F3.</b> A real M1 defect: a repeated idempotency key whose payload carries a <i>different</i> book_id returns <b>E4</b> instead of the original success. M2 works around it by deriving a stable book_id from the key — but <b>M1 should be fixed</b>. Fix order issued.</div>
+    <div class="fi"><b>F4.</b> Sandbox memory (2 GB) can OOM a <code>build_runner</code> re-run; a clean build succeeds. Environmental, not a code defect.</div>
+  </div>
+
+  <div class="foot">
+    <span>Gate 5B · M2 v1.0 · Dual Audit PASS · independently reproduced · one M1 fix owed (F3).</span>
+    <span class="verdict">M2 ACCEPTED · v1.0</span>
+  </div>
+</body>
+</html>

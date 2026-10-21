@@ -1,0 +1,64 @@
+$ flutter test tests/test_m1_library_store.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m1_library_store.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:01 +3: Test 4 — Registry Seam Contract Test
+00:01 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:01 +5: All tests passed!
+
+$ flutter test tests/test_m2_book_intake.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m2_book_intake.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:01 +5: All tests passed!
+
+$ flutter test tests/test_m4_daily_engine.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m4_daily_engine.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Anomaly Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:00 +5: All tests passed!
+
+$ flutter test tests/test_m5_widget_bridge.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m5_widget_bridge.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:00 +5: All tests passed!
+
+$ flutter test tests/test_m6_backup_vault.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m6_backup_vault.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:00 +5: All tests passed!
+
+$ flutter test tests/test_m7_grid_presenter.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m7_grid_presenter.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:01 +5: All tests passed!
+
+$ flutter test tests/test_integration_end_to_end.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_integration_end_to_end.dart
+00:00 +0: E2E-1 — Add and see
+00:00 +1: E2E-2 — Log and reflect
+00:00 +2: E2E-3 — Widget payload
+00:00 +3: E2E-4 — Tap routing
+00:00 +4: E2E-5 — Backup round-trip
+00:01 +5: E2E-6 — The 6x6 wall
+00:01 +6: All tests passed!
+

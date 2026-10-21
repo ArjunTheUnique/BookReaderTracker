@@ -1,0 +1,39 @@
+$ flutter --version
+Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision abaf9c5237 (11 days ago) • 2026-10-08 09:51:21 -0700
+Engine • hash d8a2d6c768c334d53e16277f837970ffa1e2de81 (revision deb287481e) (12 days ago) • 2026-10-07 17:09:12.000Z
+Tools • Dart 3.13.5 • DevTools 2.60.0
+
+$ dart run build_runner build
+  compiling builders/aot
+  101s compiling builders/aot
+  0s drift_dev on 16 inputs; src/modules/m1_library_store.dart
+  8s drift_dev on 16 inputs: 1 output; spent 4s sdk, 3s analyzing; src/modules/m4_daily_engine.dart
+  24s drift_dev on 16 inputs: 3 output; spent 15s analyzing, 4s sdk, 3s resolving, 2s reading; tests/test_m4_daily_engine.dart
+  25s drift_dev on 16 inputs: 4 skipped, 8 output, 4 no-op
+  0s source_gen:combining_builder on 8 inputs; src/modules/m1_library_store.dart
+  0s source_gen:combining_builder on 8 inputs: 4 skipped, 1 output, 3 no-op
+  Built with build_runner/aot in 131s; wrote 9 outputs.
+
+$ flutter test tests/test_m1_library_store.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m1_library_store.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Idempotency Breaker
+00:01 +2: Test 3 — Explicit Error-Shape Coverage
+[M1] STORAGE_ERROR: Bad state: Can't re-open a database after closing it. Please create a new database connection and open that instead.
+00:01 +3: Test 4 — Registry Seam Contract Test
+00:01 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:01 +5: All tests passed!
+
+$ flutter test tests/test_m4_daily_engine.dart
+00:00 +0: loading /scratch/work/shelf_app/tests/test_m4_daily_engine.dart
+00:00 +0: Test 1 — Happy-Path Acceptance
+00:00 +1: Test 2 — Boundary & Anomaly Breaker
+[M4] anomaly: negative pages_today clamped to 0
+00:00 +2: Test 3 — Explicit Error-Shape Coverage
+[M4] E1: as_of_date must match YYYY-MM-DD.
+[M4] E2: timezone_offset_min must be -720..840.
+[M4] E4: a required entity is missing
+00:00 +3: Test 4 — Registry Seam Contract Test
+00:00 +4: Test 5 — End-to-End Smoke & Health-Check Probe
+00:01 +5: All tests passed!

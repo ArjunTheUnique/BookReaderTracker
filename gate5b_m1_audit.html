@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gate 5B — M1 Dual Audit Verdict</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ee; --surface:#fffdfa; --surface-2:#f1ebe3;
+    --border:rgba(43,38,34,0.14); --border-soft:rgba(43,38,34,0.08);
+    --text:#2b2622; --text-dim:#7a7168;
+    --terra:#c2410c; --terra-soft:#f6e3d8;
+    --sage:#4d7c0f; --sage-soft:#e6efd6;
+    --amber:#b45309; --amber-soft:#f7ecd4;
+    --slate:#334155; --slate-soft:#e2e8f0;
+    --cran:#9f1239; --cran-soft:#f7dbe2;
+    --font-body:'Instrument Serif',Georgia,serif;
+    --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(circle at 8% 3%, rgba(159,18,57,0.05), transparent 36%),
+      radial-gradient(circle at 96% 98%, rgba(77,124,15,0.04), transparent 36%),
+      var(--bg);
+    color:var(--text); font-family:var(--font-body); padding:42px 46px 34px; width:1500px;}
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--cran);font-weight:700;display:flex;align-items:center;gap:12px;}
+  .kicker::after{content:"";flex:1;height:1px;background:var(--border);}
+  h1{font-size:36px;line-height:1.05;margin:11px 0 4px;font-weight:400;}
+  h1 em{font-style:italic;color:var(--cran);}
+  .sub{font-size:15.5px;color:var(--text-dim);max-width:1180px;line-height:1.5;margin-bottom:22px;}
+
+  .stage{display:grid;grid-template-columns:420px 1fr;gap:20px;align-items:start;}
+  .mod{background:linear-gradient(180deg,#fffdfa,#f6efe7);border:2px solid var(--terra);border-radius:16px;padding:16px 18px;}
+  .mhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .mhead .mid{font-family:var(--font-mono);font-size:13px;font-weight:700;color:#fff;background:var(--terra);padding:3px 10px;border-radius:7px;}
+  .mhead .mn{font-size:22px;font-weight:600;}
+  .mlist{font-size:14px;color:var(--text);line-height:1.6;}
+  .mlist .ok{color:var(--sage);font-weight:700;}
+  .mlist code{font-family:var(--font-mono);font-size:11.5px;background:var(--surface-2);padding:0 4px;border-radius:4px;}
+  .fails{margin-top:12px;background:var(--cran-soft);border:1px solid rgba(159,18,57,0.3);border-left:4px solid var(--cran);border-radius:9px;padding:10px 12px;}
+  .fails .fh{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--cran);letter-spacing:0.08em;margin-bottom:6px;}
+  .fails .fi{font-size:13.5px;color:#6b1a30;line-height:1.5;margin-bottom:4px;}
+
+  .stamps{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .stampcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;border-top:5px solid var(--cran);}
+  .stampcard .st{display:inline-block;font-family:var(--font-mono);font-size:14px;font-weight:700;letter-spacing:0.14em;color:#fff;background:var(--cran);padding:5px 14px;border-radius:7px;margin-bottom:10px;}
+  .stampcard h3{font-size:18px;font-weight:600;margin-bottom:10px;}
+  .stampcard .row{display:flex;gap:9px;font-size:13.5px;line-height:1.45;margin-bottom:7px;align-items:flex-start;}
+  .stampcard .row .mk{font-family:var(--font-mono);font-weight:700;flex:none;width:16px;}
+  .stampcard .row.p .mk{color:var(--sage);}
+  .stampcard .row.f .mk{color:var(--cran);}
+  .stampcard .row.f{color:#6b1a30;}
+  .stampcard .row code{font-family:var(--font-mono);font-size:11.5px;background:var(--surface-2);padding:0 4px;border-radius:4px;}
+
+  .fix{margin-top:20px;background:linear-gradient(180deg,#fffdfa,#faf2f5);border:1px solid rgba(159,18,57,0.25);border-radius:14px;padding:16px 20px;}
+  .fix .fhead{font-family:var(--font-mono);font-size:12.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--cran);margin-bottom:12px;}
+  .fixgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+  .fixitem{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--cran);border-radius:9px;padding:10px 12px;}
+  .fixitem .fn{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--cran);}
+  .fixitem .fd{font-size:13px;color:var(--text);line-height:1.42;margin-top:3px;}
+
+  .foot{margin-top:22px;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim);border-top:1px solid var(--border);padding-top:13px;}
+  .verdict{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.1em;color:#fff;background:var(--cran);border-radius:6px;padding:6px 12px;}
+</style>
+</head>
+<body>
+  <div class="kicker">Gate 5B · M1 Library Store — Dual Audit Verdict</div>
+  <h1>M1 v1.0 — <em>stamped FAIL</em> (on evidence, not on craft)</h1>
+  <p class="sub">The code is genuinely good: well-zoned, contract-faithful, secret-free, and my own independent re-derivation of its rules passes 28/28. But the two things this gate exists to demand — a complete pinned manifest and a real execution receipt — are not both present. So the stamp is FAIL, and a Defect Fix Order follows.</p>
+
+  <div class="stage">
+    <div class="mod">
+      <div class="mhead"><span class="mid">M1</span><span class="mn">Library Store · v1.0</span></div>
+      <div class="mlist">
+        <div><span class="ok">PASS</span> — path <code>src/modules/m1_library_store.dart</code> matches the Gate 4 tree</div>
+        <div><span class="ok">PASS</span> — test <code>tests/test_m1_library_store.dart</code> matches the Gate 4 tree</div>
+        <div><span class="ok">PASS</span> — Control/Data separation held (Zones 1–4)</div>
+        <div><span class="ok">PASS</span> — zero hardcoded secrets (all via <code>fromEnvironment</code>)</div>
+        <div><span class="ok">PASS</span> — <code>.env.example</code> present, names match the order</div>
+        <div><span class="ok">PASS</span> — Version Stamp v1.0 synced (module · test · master doc)</div>
+      </div>
+      <div class="fails">
+        <div class="fh">FAIL ITEMS</div>
+        <div class="fi">1 · Manifest: <code>sqlite3_flutter_libs</code>, <code>path_provider</code>, <code>build_runner</code> have no exact version (marked "PIN TO pubspec.lock").</div>
+        <div class="fi">2 · Runtime: Tests 1–5 were never executed with <code>flutter test</code>; the receipt's "Actual Runtime Output" is a Python logic-parity harness.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="stamps">
+        <div class="stampcard">
+          <span class="st">FAIL</span>
+          <h3>Paper &amp; Manifest Audit</h3>
+          <div class="row p"><span class="mk">✓</span><span>Both file paths verbatim from Gate 4</span></div>
+          <div class="row p"><span class="mk">✓</span><span>Control vs Data separation intact</span></div>
+          <div class="row p"><span class="mk">✓</span><span>No secret literals anywhere</span></div>
+          <div class="row p"><span class="mk">✓</span><span><code>.env.example</code> matches the order's variable names</span></div>
+          <div class="row p"><span class="mk">✓</span><span>Version Stamp v1.0 in sync</span></div>
+          <div class="row f"><span class="mk">✗</span><span>Pinned manifest incomplete — 3 dependencies carry no exact version</span></div>
+        </div>
+        <div class="stampcard">
+          <span class="st">FAIL</span>
+          <h3>5-Part Runtime Verification</h3>
+          <div class="row p"><span class="mk">✓</span><span>Test script present; covers Tests 1–5</span></div>
+          <div class="row p"><span class="mk">✓</span><span>Independent rule re-derivation (mine): 28/28 PASS</span></div>
+          <div class="row f"><span class="mk">✗</span><span>Tests 1–5 not run in Dart — no <code>flutter test</code> output</span></div>
+          <div class="row f"><span class="mk">✗</span><span>Receipt substitutes a Python parity harness for the real suite</span></div>
+          <div class="row f"><span class="mk">✗</span><span>No machine with Flutter 3.47.7 produced the receipt</span></div>
+        </div>
+      </div>
+
+      <div class="fix">
+        <div class="fhead">Defect Fix Order — M1 v1.0 → v1.0.1 (6 items)</div>
+        <div class="fixgrid">
+          <div class="fixitem"><div class="fn">1 · IDENTITY</div><div class="fd">M1 · v1.0 → v1.0.1 · same module + test paths</div></div>
+          <div class="fixitem"><div class="fn">2 · FAILED ITEMS</div><div class="fd">Manifest rows sqlite3_flutter_libs / path_provider / build_runner; Receipt Test 1–5 (not run)</div></div>
+          <div class="fixitem"><div class="fn">3 · EXPECTED vs ACTUAL</div><div class="fd">Expected exact pins + real test output; actual placeholders + a parity harness</div></div>
+          <div class="fixitem"><div class="fn">4 · ROOT CAUSE</div><div class="fd">No Flutter SDK / no pubspec.lock in the builder sandbox</div></div>
+          <div class="fixitem"><div class="fn">5 · FIX DIRECTIVE</div><div class="fd">Run pub get + codegen + flutter test on a Flutter 3.47.7 machine; record exact pins; also harden ledger PK</div></div>
+          <div class="fixitem"><div class="fn">6 · REGRESSION</div><div class="fd">Re-run Tests 1–5 and return a full 6-section package at v1.0.1</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Gate 5B · M1 Dual Audit · v1.0 — progression held until v1.0.1 returns with a real execution receipt.</span>
+    <span class="verdict">DUAL AUDIT: FAIL · HOLD</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gate 5A — M4 Daily Engine Socket &amp; Test Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ee; --surface:#fffdfa; --surface-2:#f1ebe3;
+    --border:rgba(43,38,34,0.14); --border-soft:rgba(43,38,34,0.08);
+    --text:#2b2622; --text-dim:#7a7168;
+    --terra:#c2410c; --terra-soft:#f6e3d8;
+    --sage:#4d7c0f; --sage-soft:#e6efd6;
+    --amber:#b45309; --amber-soft:#f7ecd4;
+    --slate:#334155; --slate-soft:#e2e8f0;
+    --plum:#7c2d4e; --plum-soft:#f3dde6;
+    --font-body:'Instrument Serif',Georgia,serif;
+    --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(circle at 8% 3%, rgba(194,65,12,0.05), transparent 36%),
+      radial-gradient(circle at 96% 98%, rgba(77,124,15,0.05), transparent 36%),
+      var(--bg);
+    color:var(--text); font-family:var(--font-body); padding:42px 46px 34px; width:1500px;}
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--terra);font-weight:700;display:flex;align-items:center;gap:12px;}
+  .kicker::after{content:"";flex:1;height:1px;background:var(--border);}
+  h1{font-size:36px;line-height:1.05;margin:11px 0 4px;font-weight:400;}
+  h1 em{font-style:italic;color:var(--terra);}
+  .sub{font-size:15.5px;color:var(--text-dim);max-width:1180px;line-height:1.5;margin-bottom:22px;}
+  .stage{display:grid;grid-template-columns:280px 1fr 300px;gap:18px;align-items:center;}
+  .colhead{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+  .stack{display:flex;flex-direction:column;gap:8px;}
+  .ch{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--sage);border-radius:9px;padding:8px 11px;}
+  .ch .cn{font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:var(--sage);}
+  .ch .cd{font-size:13px;color:var(--text);}
+  .ch.port{border-left-color:var(--plum);} .ch.port .cn{color:var(--plum);}
+  .m4box{background:linear-gradient(180deg,#fffdfa,#f6efe7);border:2px solid var(--terra);border-radius:16px;padding:16px 18px;}
+  .m4head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .m4head .mid{font-family:var(--font-mono);font-size:13px;font-weight:700;color:#fff;background:var(--terra);padding:3px 10px;border-radius:7px;}
+  .m4head .mn{font-size:22px;font-weight:600;}
+  .sockets{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sock{border-radius:10px;padding:11px 12px;}
+  .sock.in{background:var(--sage-soft);border:1px solid rgba(77,124,15,0.35);border-left:5px solid var(--sage);}
+  .sock.out{background:var(--terra-soft);border:1px solid rgba(194,65,12,0.3);border-right:5px solid var(--terra);}
+  .sock .sl{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--text-dim);display:block;margin-bottom:5px;}
+  .sock code{font-family:var(--font-mono);font-size:11px;line-height:1.55;color:var(--text);word-break:break-word;display:block;}
+  .errs{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-family:var(--font-mono);font-size:11px;}
+  .errs .k{font-weight:700;color:var(--amber);}
+  .ec{background:var(--amber-soft);border:1px solid rgba(180,83,9,0.25);border-radius:5px;padding:2px 7px;color:#8a4008;font-weight:700;}
+  .note{margin-top:10px;font-size:13px;color:var(--text-dim);line-height:1.45;border-top:1px dashed var(--border);padding-top:9px;}
+  .note b{color:var(--text);}
+  .och{background:var(--surface);border:1px solid var(--border);border-right:4px solid var(--terra);border-radius:9px;padding:8px 11px;}
+  .och .on{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--terra);}
+  .och .od{font-size:12.5px;color:var(--text);line-height:1.4;}
+  .tests{margin-top:24px;}
+  .thead{font-family:var(--font-mono);font-size:12.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--slate);margin-bottom:11px;display:flex;align-items:center;gap:12px;}
+  .thead .rail{flex:1;height:1px;background:var(--border);}
+  .tgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
+  .tcard{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--sage);border-radius:10px;padding:11px 12px;}
+  .tcard .tn{font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:var(--sage);}
+  .tcard .tt{font-size:14px;font-weight:600;margin:4px 0 5px;line-height:1.25;}
+  .tcard .td{font-size:12.5px;color:var(--text-dim);line-height:1.42;}
+  .foot{margin-top:24px;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim);border-top:1px solid var(--border);padding-top:13px;}
+  .stamp{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--terra);border:1px solid rgba(194,65,12,0.35);border-radius:6px;padding:5px 10px;background:var(--terra-soft);}
+</style>
+</head>
+<body>
+  <div class="kicker">Gate 5A · Module Work Order — M4 Daily Engine</div>
+  <h1>M4 <em>Daily Engine</em> — the day's picture, composed</h1>
+  <p class="sub">M4 turns raw progress into one clean day view: total pages today and a per-book percentage, ready for the widget (M5) and the grid (M7). M1 already stores the per-day rows; M4 owns the <b>timezone-aware "today"</b> and the anomaly guard, and it never pushes to the widget itself.</p>
+
+  <div class="stage">
+    <div>
+      <div class="colhead">Caller &amp; injected port</div>
+      <div class="stack">
+        <div class="ch"><div class="cn">M5 / M7</div><div class="cd">"give me today's picture"</div></div>
+        <div class="ch port"><div class="cn">Clock (port)</div><div class="cd">timezone-aware now — fakeable in tests</div></div>
+      </div>
+    </div>
+    <div class="m4box">
+      <div class="m4head"><span class="mid">M4</span><span class="mn">Daily Engine</span></div>
+      <div class="sockets">
+        <div class="sock in"><span class="sl">IN</span><code>{ as_of_date: "YYYY-MM-DD", timezone_offset_min: int }</code></div>
+        <div class="sock out"><span class="sl">OUT — success</span><code>{ ok: true, data: { date, total_pages_today: int, per_book: [ { book_id, pages_today: int, pct_today: float 0–100 } ] }, schema_version: 1 }<br>failure: { ok:false, error:{ code, message, field? } }</code></div>
+      </div>
+      <div class="errs"><span class="k">Declared error shapes:</span><span class="ec">E1</span><span class="ec">E2</span><span class="ec">E4</span></div>
+      <div class="note"><b>Forbidden:</b> no widget push (M5 owns it) and no file reads. M4 reads via <b>M1</b> <code>read_daily</code> and composes; it never writes.</div>
+    </div>
+    <div>
+      <div class="colhead">Downstream &amp; what comes back</div>
+      <div class="stack">
+        <div class="och"><div class="on">← M1 read_daily</div><div class="od">raw per-day rows for the date</div></div>
+        <div class="och"><div class="on">anomaly guard</div><div class="od">clock jump → clamp negatives to 0 (S5)</div></div>
+        <div class="och"><div class="on">→ M5 / M7</div><div class="od">the composed day view</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tests">
+    <div class="thead"><span>Mandatory 5-Part Verification Suite — definition of done</span><span class="rail"></span></div>
+    <div class="tgrid">
+      <div class="tcard"><div class="tn">TEST 1</div><div class="tt">Happy-Path Acceptance</div><div class="td">Progress logged for a date → correct total_pages_today and per-book pct_today.</div></div>
+      <div class="tcard"><div class="tn">TEST 2</div><div class="tt">Boundary &amp; Idempotency</div><div class="td">Empty day → zeros, not an error; clock jump → negatives clamped to 0.</div></div>
+      <div class="tcard"><div class="tn">TEST 3</div><div class="tt">Error-Shape Coverage</div><div class="td">One case each for E1, E2, E4 — exact error.code asserted.</div></div>
+      <div class="tcard"><div class="tn">TEST 4</div><div class="tt">Registry Seam Check</div><div class="td">OUT keys exactly {date, total_pages_today, per_book}; per_book keys exact; schema_version == 1.</div></div>
+      <div class="tcard"><div class="tn">TEST 5</div><div class="tt">Smoke &amp; Health Probe</div><div class="td">Boots against fresh M1; M4→M1 seam works end to end.</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Gate 5A · M4 Daily Engine Work Order v1.0 — target src/modules/m4_daily_engine.dart + tests/test_m4_daily_engine.dart</span>
+    <span class="stamp">WORK ORDER ISSUED</span>
+  </div>
+</body>
+</html>

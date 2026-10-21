@@ -1,0 +1,40 @@
+<!--
+  INT-2 — the manifest entry that registers the widget.
+  Add this <receiver> INSIDE the <application> element of
+  android/app/src/main/AndroidManifest.xml (alongside the existing
+  FlutterActivity declaration).
+
+  The appwidget-provider metadata points at
+  res/xml/shelf_widget_info.xml, which you also create:
+
+      <?xml version="1.0" encoding="utf-8"?>
+      <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+          android:minWidth="110dp"
+          android:minHeight="110dp"
+          android:updatePeriodMillis="1800000"
+          android:initialLayout="@layout/shelf_widget"
+          android:resizeMode="horizontal|vertical"
+          android:widgetCategory="home_screen" />
+
+  updatePeriodMillis is in milliseconds (1800000 = 30 minutes), matching
+  WIDGET_REFRESH_MIN.
+-->
+
+<receiver
+    android:name=".ShelfWidgetProvider"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+    </intent-filter>
+    <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/shelf_widget_info" />
+</receiver>
+
+<!-- The deep-link scheme the widget tap uses (M5 mints shelf://...). -->
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="shelf" />
+</intent-filter>

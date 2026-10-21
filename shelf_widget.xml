@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  INT-2 — Android home-screen widget layout.
+  Shows the day's numbers ONLY (privacy T7): "pages today / goal" plus a
+  small progress bar. Book titles are never shown here unless
+  WIDGET_SHOW_TITLES is enabled by the app (the payload carries the flag;
+  the native side would add a second TextView for titles).
+
+  Staleness (S6): when the shared store has no fresh payload the numbers
+  are replaced with "—" and a "no data" stamp — never a wrong number.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#FFFDFA">
+
+    <TextView
+        android:id="@+id/widget_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shelf — today"
+        android:textSize="12sp"
+        android:textColor="#7A7168" />
+
+    <TextView
+        android:id="@+id/widget_numbers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="—"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#C2410C" />
+
+    <ProgressBar
+        android:id="@+id/widget_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/widget_updated"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="no data"
+        android:textSize="10sp"
+        android:textColor="#7A7168" />
+</LinearLayout>
