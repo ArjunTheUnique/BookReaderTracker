@@ -1,13 +1,19 @@
 name: handoff
 
-# The trigger surface for the Stack Builder.
-# Fires when a task issue is opened/labelled, or when the Architect updates the queue.
+# Event-driven handoff between the Architect and the Stack Builder.
+# No clock. Events only.
+#
+#   architect-ready   -> ping the Builder (it has work)
+#   builder-delivered -> tell the Architect + notify the operator (it has a result)
+#
 on:
   issues:
     types: [opened, labeled]
   push:
     paths:
       - "handoff/**"
+  repository_dispatch:
+    types: [architect-ready, builder-delivered]
 
 permissions:
   issues: write
@@ -15,39 +21,43 @@ permissions:
 
 jobs:
   notify:
-    # only act on task issues (or a queue push)
-    if: github.event_name == 'push' || contains(github.event.issue.labels.*.name, 'builder-task')
+    if: >
+      github.event_name == 'repository_dispatch' ||
+      github.event_name == 'push' ||
+      contains(github.event.issue.labels.*.name, 'builder-task')
     runs-on: ubuntu-latest
     steps:
-      - name: Comment the task on the issue
+      - name: Architect says READY — ping the Builder
+        if: github.event.action == 'architect-ready'
+        env:
+          BUILDER_HOOK: ${{ secrets.BUILDER_WEBHOOK_URL }}
+        run: |
+          if [ -z "$BUILDER_HOOK" ]; then
+            echo "::error::No BUILDER_WEBHOOK_URL secret set — cannot reach the Builder."
+            exit 1
+          fi
+          curl -sS -X POST "$BUILDER_HOOK" -H "Content-Type: application/json" \
+            -d '{"event":"architect-ready","repo":"'"$GITHUB_REPOSITORY"'"}'
+          echo "Builder pinged."
+
+      - name: Builder says DELIVERED — notify the operator
+        if: github.event.action == 'builder-delivered'
+        env:
+          OPERATOR_HOOK: ${{ secrets.OPERATOR_WEBHOOK_URL }}
+        run: |
+          echo "The Builder has delivered a result. Audit is due."
+          if [ -n "$OPERATOR_HOOK" ]; then
+            curl -sS -X POST "$OPERATOR_HOOK" -H "Content-Type: application/json" \
+              -d '{"event":"builder-delivered","repo":"'"$GITHUB_REPOSITORY"'"}'
+          fi
+
+      - name: Comment the task on a new task issue
         if: github.event_name == 'issues'
         uses: actions/github-script@v7
         with:
           script: |
-            const body = [
-              "**Builder task received.**",
-              "",
-              "Read `handoff/queue.json` for the open item, then build from the `order` file it names.",
-              "When done: write `receipts/<id>_receipt.md` and comment `DELIVERED <id>`.",
-              "",
-              "The Architect audits on an hourly schedule."
-            ].join("\n");
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.issue.number,
-              body
+              body: "**Builder task received.** Read `handoff/queue.json`, build from the `order` it names, write `receipts/<id>_receipt.md`, then comment `DELIVERED <id>` and fire `repository_dispatch` type `builder-delivered`."
             });
-
-      - name: Ping the Builder if a webhook is configured
-        env:
-          HOOK: ${{ secrets.BUILDER_WEBHOOK_URL }}
-        run: |
-          if [ -n "$HOOK" ]; then
-            curl -sS -X POST "$HOOK" \
-              -H "Content-Type: application/json" \
-              -d '{"event":"builder-task","repo":"'"$GITHUB_REPOSITORY"'"}'
-            echo "Pinged the Builder webhook."
-          else
-            echo "No BUILDER_WEBHOOK_URL secret set — the issue itself is the trigger."
-          fi
