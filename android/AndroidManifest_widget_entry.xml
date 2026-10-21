@@ -1,23 +1,17 @@
 <!--
-  INT-2 — the manifest entry that registers the widget.
-  Add this <receiver> INSIDE the <application> element of
-  android/app/src/main/AndroidManifest.xml (alongside the existing
-  FlutterActivity declaration).
+  INT-2 — the manifest entry that registers the home-screen widget.
+  The build merges this block into
+  android/app/src/main/AndroidManifest.xml, immediately before </application>.
 
-  The appwidget-provider metadata points at
-  res/xml/shelf_widget_info.xml, which you also create:
+  It contains ONLY the <receiver>. An <intent-filter> may NOT be a direct child
+  of <application> — AAPT rejects it with
+  "unexpected element <intent-filter> found in <manifest><application>".
+  So the widget's deep-link scheme (shelf://...) is declared INSIDE MainActivity
+  in the manifest itself, not here.
 
-      <?xml version="1.0" encoding="utf-8"?>
-      <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-          android:minWidth="110dp"
-          android:minHeight="110dp"
-          android:updatePeriodMillis="1800000"
-          android:initialLayout="@layout/shelf_widget"
-          android:resizeMode="horizontal|vertical"
-          android:widgetCategory="home_screen" />
-
-  updatePeriodMillis is in milliseconds (1800000 = 30 minutes), matching
-  WIDGET_REFRESH_MIN.
+  The appwidget-provider metadata points at res/xml/shelf_widget_info.xml
+  (minWidth/minHeight 110dp, updatePeriodMillis 1800000 = 30 minutes, matching
+  WIDGET_REFRESH_MIN).
 -->
 
 <receiver
@@ -30,11 +24,3 @@
         android:name="android.appwidget.provider"
         android:resource="@xml/shelf_widget_info" />
 </receiver>
-
-<!-- The deep-link scheme the widget tap uses (M5 mints shelf://...). -->
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="shelf" />
-</intent-filter>
