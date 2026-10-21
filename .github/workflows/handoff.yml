@@ -1,0 +1,53 @@
+name: handoff
+
+# The trigger surface for the Stack Builder.
+# Fires when a task issue is opened/labelled, or when the Architect updates the queue.
+on:
+  issues:
+    types: [opened, labeled]
+  push:
+    paths:
+      - "handoff/**"
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  notify:
+    # only act on task issues (or a queue push)
+    if: github.event_name == 'push' || contains(github.event.issue.labels.*.name, 'builder-task')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment the task on the issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              "**Builder task received.**",
+              "",
+              "Read `handoff/queue.json` for the open item, then build from the `order` file it names.",
+              "When done: write `receipts/<id>_receipt.md` and comment `DELIVERED <id>`.",
+              "",
+              "The Architect audits on an hourly schedule."
+            ].join("\n");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Ping the Builder if a webhook is configured
+        env:
+          HOOK: ${{ secrets.BUILDER_WEBHOOK_URL }}
+        run: |
+          if [ -n "$HOOK" ]; then
+            curl -sS -X POST "$HOOK" \
+              -H "Content-Type: application/json" \
+              -d '{"event":"builder-task","repo":"'"$GITHUB_REPOSITORY"'"}'
+            echo "Pinged the Builder webhook."
+          else
+            echo "No BUILDER_WEBHOOK_URL secret set — the issue itself is the trigger."
+          fi
