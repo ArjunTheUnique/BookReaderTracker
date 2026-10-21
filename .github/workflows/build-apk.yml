@@ -1,0 +1,67 @@
+name: build-apk
+
+# Builds the installable Android app on GitHub's runners (which already carry the
+# Android SDK) — so no machine of the operator's is ever needed, and nothing is paid.
+#
+# Produces an artifact you can download from the run page: "shelf-app-apk".
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "lib/**"
+      - "pubspec.yaml"
+      - "build.yaml"
+      - "android/**"
+      - ".github/workflows/build-apk.yml"
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          channel: stable
+
+      - name: Ensure an Android platform folder exists
+        run: |
+          if [ ! -f android/build.gradle ] && [ ! -f android/build.gradle.kts ]; then
+            echo "No android/ scaffold found — generating one."
+            flutter create --platforms=android --org com.example .
+          fi
+
+      - name: Register the home-screen widget
+        run: |
+          MAN=android/app/src/main/AndroidManifest.xml
+          ENTRY=android/AndroidManifest_widget_entry.xml
+          if [ -f "$MAN" ] && [ -f "$ENTRY" ]; then
+            python3 .github/scripts/register_widget.py "$MAN" "$ENTRY"
+          else
+            echo "manifest or entry file missing — skipping"
+          fi
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build the release APK
+        run: flutter build apk --release -t src/app/main.dart
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: shelf-app-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
