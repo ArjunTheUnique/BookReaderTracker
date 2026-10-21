@@ -13,16 +13,16 @@
       "id": "WIRING-M3",
       "title": "Swap the M3 stand-in for the real module in wiring.dart",
       "order": "work-orders/WIRING_SWAP_M3.md",
-      "status": "OPEN",
-      "receipt": null,
+      "status": "DELIVERED",
+      "receipt": "receipts/WIRING-M3_receipt.md",
       "note": "M3 is verified, but src/app/wiring.dart still constructs M1ProgressLogger (the temporary stand-in) at two call sites (~192, ~233). Replace it with the real M3 behind a thin ProgressLoggerPort adapter."
     },
     {
       "id": "PACKAGE-APK",
       "title": "Make the repo a buildable Flutter project, so GitHub Actions can build the APK",
       "order": "work-orders/PACKAGE_APK.md",
-      "status": "OPEN",
-      "receipt": null,
+      "status": "DELIVERED",
+      "receipt": "receipts/PACKAGE-APK_receipt.md",
       "note": "The APK is now built on GitHub Actions (free, no operator machine). The workflow .github/workflows/build-apk.yml is in place. The repo must first hold a complete Flutter project (root pubspec.yaml + build.yaml + the android/ platform scaffold with the widget registered). Until then the workflow fails, which is expected."
     }
   ],
