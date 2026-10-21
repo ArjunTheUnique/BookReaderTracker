@@ -1,6 +1,6 @@
 // ============================================================
 // PLATFORM EDGE — M6 Backup Vault adapters
-// Version Stamp : v1.0
+// Version Stamp : v1.0.1  (compile fix: crypto import is prefixed)
 // Pairs with    : src/modules/m6_backup_vault.dart
 // ------------------------------------------------------------
 // WHY THIS FILE EXISTS
@@ -9,7 +9,13 @@
 //   the FileVault, Cipher and LibraryVaultPort ports; this file
 //   implements them for a real device.
 //
-//   It is NOT imported by the module or by the test suite.
+//   It is NOT imported by the module or by the module's test. It IS
+//   imported by INT-1's wiring, which is where the compile errors this
+//   version fixes were first seen.
+//
+// NOTE: the `cryptography` package also exports a class named `Cipher`,
+//   which collided with M6's own `Cipher`. The crypto import is therefore
+//   prefixed `crypto.` so M6's port name wins.
 //
 // DO NOT put business rules here — only transport.
 // ============================================================
@@ -17,7 +23,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cryptography/cryptography.dart';
+import 'package:cryptography/cryptography.dart' as crypto;
 
 import 'm1_library_store.dart';
 import 'm6_backup_vault.dart';
@@ -48,18 +54,19 @@ class IoFileVault implements FileVault {
 /// nonce || mac || ciphertext. A wrong passphrase or a tampered file
 /// fails the GCM tag and becomes E9.
 class CryptographyCipher implements Cipher {
-  final AesGcm _algorithm = AesGcm.with256bits();
+  final crypto.AesGcm _algorithm = crypto.AesGcm.with256bits();
 
-  Future<SecretKey> _key(String passphrase) async {
-    final Hash hash = await Sha256().hash(utf8.encode(passphrase));
-    return SecretKey(hash.bytes);
+  Future<crypto.SecretKey> _key(String passphrase) async {
+    final crypto.Hash hash =
+        await crypto.Sha256().hash(utf8.encode(passphrase));
+    return crypto.SecretKey(hash.bytes);
   }
 
   @override
   Future<List<int>> encrypt(List<int> plain, String passphrase) async {
-    final SecretKey key = await _key(passphrase);
+    final crypto.SecretKey key = await _key(passphrase);
     final List<int> nonce = _algorithm.newNonce();
-    final SecretBox box =
+    final crypto.SecretBox box =
         await _algorithm.encrypt(plain, secretKey: key, nonce: nonce);
     return <int>[...nonce, ...box.mac.bytes, ...box.cipherText];
   }
@@ -70,11 +77,12 @@ class CryptographyCipher implements Cipher {
       final int nonceLen = _algorithm.nonceLength;
       const int macLen = 16;
       final List<int> nonce = cipher.sublist(0, nonceLen);
-      final Mac mac = Mac(cipher.sublist(nonceLen, nonceLen + macLen));
+      final crypto.Mac mac =
+          crypto.Mac(cipher.sublist(nonceLen, nonceLen + macLen));
       final List<int> text = cipher.sublist(nonceLen + macLen);
-      final SecretKey key = await _key(passphrase);
+      final crypto.SecretKey key = await _key(passphrase);
       return await _algorithm.decrypt(
-          SecretBox(text, nonce: nonce, mac: mac),
+          crypto.SecretBox(text, nonce: nonce, mac: mac),
           secretKey: key);
     } catch (e) {
       throw CipherError('$e');

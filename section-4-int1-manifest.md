@@ -1,6 +1,6 @@
 # SECTION 4 — PINNED DEPENDENCY MANIFEST
 
-Every dependency pinned to an exact version (ADR-010).
+Unchanged — this order adds and removes no dependency.
 
 ```yaml
 name: shelf_app

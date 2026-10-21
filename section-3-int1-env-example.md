@@ -1,12 +1,13 @@
 # SECTION 3 — .ENV.EXAMPLE TEMPLATE
 
+Unchanged from INT-1 v1.0 (this order changes no configuration).
+
 ```dotenv
 # ============================================================
 # .env.example — INT-1 App Shell & Wiring
-# Version Stamp : v1.0
+# Version Stamp : v1.0.1
 # ------------------------------------------------------------
-# NON-SECRET tunables only. No credentials exist anywhere in this
-# app, and none may be introduced.
+# NON-SECRET tunables only. No credentials exist anywhere in this app.
 # ============================================================
 
 # The daily page goal shown on the widget. Read by the SHELL and passed

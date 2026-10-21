@@ -1,6 +1,6 @@
 // ============================================================
 // PLATFORM EDGE — M2 Book Intake adapters
-// Version Stamp : v1.0
+// Version Stamp : v1.0.1  (compile fix: file_picker 13 API)
 // Pairs with    : src/modules/m2_book_intake.dart
 // ------------------------------------------------------------
 // WHY THIS FILE EXISTS
