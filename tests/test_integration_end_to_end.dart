@@ -1,6 +1,6 @@
 // ============================================================
 // INTEGRATION PASSPORT — INT-1 End-to-End Test
-// Version Stamp : v1.0.1  (patched from v1.0 — see PATCH NOTE below)
+// Version Stamp : v1.0.2  (patched from v1.0.1 — see PATCH NOTES below)
 // Files: src/main.dart · src/app/app_shell.dart · src/app/routes.dart
 //        src/app/wiring.dart · tests/test_integration_end_to_end.dart
 // ------------------------------------------------------------
@@ -26,6 +26,13 @@
 //        file_picker API. It now uses the 13.1.0 static FilePicker.pickFile()
 //        and PlatformFile.readAsBytes().
 //   No module contract, error code or port definition changed.
+//
+// PATCH NOTE (v1.0.2)
+//   The M3 Progress Logger stand-in is gone. Now that M3 v1.0 exists,
+//   `src/app/wiring.dart` builds the real `M3ProgressLogger` behind its
+//   `ProgressLoggerPort` and bridges M3's own M1 seam (`ProgressStorePort`).
+//   The shell's progress path runs through the real module. No module
+//   contract, error code or port definition changed.
 // ============================================================
 
 import 'package:drift/drift.dart' show driftRuntimeOptions;

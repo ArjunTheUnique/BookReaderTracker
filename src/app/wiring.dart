@@ -12,18 +12,18 @@
 //   LibraryStorePort  -> M1LibraryStorePort        (M1 -> M2/M6)
 //   FileAccess        -> FilePickerFileAccess      (M2)
 //   PageExtractor     -> PdfEpubPageExtractor      (M2)
-//   Clock             -> SystemClock               (M4, M7)
+//   Clock             -> SystemClock               (M3, M4, M7)
 //   DailySourcePort   -> _M1DailySource            (M4 over M1)
 //   WidgetHost        -> HomeWidgetHost            (M5)
 //   FileVault/Cipher  -> IoFileVault/Cryptography  (M6)
 //   CatalogPort       -> _M1Catalog                (M7 over M1)
 //   DailyViewPort     -> _M4DailyView              (M7 over M4)
-//   ProgressLoggerPort-> M1ProgressLogger          (M3 seam - see below)
+//   ProgressLoggerPort-> M3ProgressLoggerAdapter   (M3)
+//   ProgressStorePort -> M1ProgressStorePort       (M3 over M1)
 //
-// M3 NOTE: the Progress Logger module has not been delivered yet, so
-//   this file defines the ProgressLoggerPort seam and a temporary
-//   M1-backed stand-in. When M3's module arrives it replaces the
-//   stand-in; nothing else changes.
+// M3 NOTE (v1.0.2): M3 Progress Logger was delivered at v1.0, so the
+//   temporary M1-backed stand-in is gone. The shell's progress path now
+//   runs through the real module.
 //
 // DO NOT TOUCH the wiring table, the goal_pages source, or the rule
 //   that the UI reads view-models from M7 only.
@@ -36,6 +36,7 @@ import 'dart:async';
 import '../modules/m1_library_store.dart';
 import '../modules/m2_book_intake.dart';
 import '../modules/m2_book_intake_adapters.dart';
+import '../modules/m3_progress_logger.dart' as m3;
 import '../modules/m4_daily_engine.dart' as engine;
 import '../modules/m5_widget_bridge.dart';
 import '../modules/m5_widget_bridge_adapters.dart';
@@ -48,48 +49,36 @@ import 'routes.dart';
 // The M3 seam
 // ---------------------------------------------------------------
 
-/// The slice of M3 (Progress Logger) the shell needs. Declared here
-/// because M3's module has not been delivered yet.
+/// The slice of M3 (Progress Logger) the shell needs.
 abstract class ProgressLoggerPort {
   Future<Map<String, dynamic>> handle(Map<String, dynamic> input);
   Future<String> healthCheck();
 }
 
-/// TEMPORARY stand-in for M3: logs progress straight through M1's
-/// update_progress, shaped as M3's contract says. Replace with the real
-/// M3 module when it arrives.
-class M1ProgressLogger implements ProgressLoggerPort {
-  M1ProgressLogger(this.store);
-  final M1LibraryStore store;
+/// M3 behind INT-1's progress seam. The real module (v1.0) replaced the
+/// temporary M1-backed stand-in at INT-1 v1.0.2; this adapter is the one
+/// line Dart's nominal typing needs.
+class M3ProgressLoggerAdapter implements ProgressLoggerPort {
+  M3ProgressLoggerAdapter(this._m3);
+  final m3.M3ProgressLogger _m3;
 
   @override
-  Future<Map<String, dynamic>> handle(Map<String, dynamic> input) async {
-    final Map<String, dynamic> r = await store.handle(<String, dynamic>{
-      'op': 'update_progress',
-      'payload': <String, dynamic>{
-        'book_id': input['book_id'],
-        'current_page': input['current_page'],
-        'read_on': input['read_on'],
-      },
-      'idempotency_key': input['idempotency_key'],
-      'schema_version': 1,
-    });
-    if (r['ok'] != true) return r;
-    final Map<String, dynamic> d = (r['data'] as Map).cast<String, dynamic>();
-    return <String, dynamic>{
-      'ok': true,
-      'data': <String, dynamic>{
-        'book_id': d['book_id'],
-        'current_page': d['current_page'],
-        'pct_read': d['pct_read'],
-        'saved': d['saved'],
-      },
-      'schema_version': 1,
-    };
-  }
+  Future<Map<String, dynamic>> handle(Map<String, dynamic> input) =>
+      _m3.handle(input);
 
   @override
-  Future<String> healthCheck() => store.healthCheck();
+  Future<String> healthCheck() => _m3.healthCheck();
+}
+
+/// M3's own M1 seam. M3 declares `ProgressStorePort`; Dart is nominally
+/// typed, so it needs this one-line bridge to the frozen M1.
+class M1ProgressStorePort implements m3.ProgressStorePort {
+  M1ProgressStorePort(this._store);
+  final M1LibraryStore _store;
+  @override
+  Future<Map<String, dynamic>> handle(Map<String, dynamic> e) => _store.handle(e);
+  @override
+  Future<String> healthCheck() => _store.healthCheck();
 }
 
 // ---------------------------------------------------------------
@@ -126,9 +115,10 @@ class _M4DailyView implements m7grid.DailyViewPort {
   Future<String> healthCheck() => _engine.healthCheck();
 }
 
-/// The one clock handed to both M4 and M7. It implements BOTH modules'
-/// Clock interfaces, which are separate types (INT-1 finding F3).
-class SystemClock implements engine.Clock, m7grid.Clock {
+/// The one clock handed to M3, M4 and M7. It implements ALL THREE
+/// modules' Clock interfaces, which are separate types (INT-1 finding F3
+/// and M3 finding F5).
+class SystemClock implements engine.Clock, m7grid.Clock, m3.Clock {
   @override
   DateTime now() => DateTime.now();
 }
@@ -189,7 +179,9 @@ class AppWiring {
         extractor: PdfEpubPageExtractor(),
         m1: M1LibraryStorePort(store),
       ),
-      progress: M1ProgressLogger(store),
+      progress: M3ProgressLoggerAdapter(
+        m3.M3ProgressLogger(store: M1ProgressStorePort(store), clock: clock),
+      ),
       daily: daily,
       widget: M5WidgetBridge(host: HomeWidgetHost()),
       backup: M6BackupVault(
@@ -230,7 +222,9 @@ class AppWiring {
         extractor: extractor ?? _NoExtractor(),
         m1: M1LibraryStorePort(store),
       ),
-      progress: M1ProgressLogger(store),
+      progress: M3ProgressLoggerAdapter(
+        m3.M3ProgressLogger(store: M1ProgressStorePort(store), clock: theClock),
+      ),
       daily: daily,
       widget: M5WidgetBridge(host: widgetHost),
       backup: M6BackupVault(
