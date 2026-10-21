@@ -10,12 +10,12 @@
   ],
   "items": [
     {
-      "id": "M3",
-      "title": "M3 Progress Logger",
-      "order": "work-orders/M3_WORK_ORDER_v1.0.md",
+      "id": "WIRING-M3",
+      "title": "Swap the M3 stand-in for the real module in wiring.dart",
+      "order": "work-orders/WIRING_SWAP_M3.md",
       "status": "OPEN",
       "receipt": null,
-      "note": "Never delivered. INT-1 currently runs a temporary M1-backed stand-in in wiring.dart. Build the real module, replace the stand-in, re-run the end-to-end suite."
+      "note": "M3 is verified, but src/app/wiring.dart still constructs M1ProgressLogger (the temporary stand-in) at two call sites. Replace it with the real M3 behind a thin ProgressLoggerPort adapter, then re-run test_m3 and the end-to-end suite."
     },
     {
       "id": "INT2-APK",
@@ -37,6 +37,12 @@
       "id": "M2",
       "status": "VERIFIED",
       "version": "v1.0"
+    },
+    {
+      "id": "M3",
+      "status": "VERIFIED",
+      "version": "v1.0",
+      "note": "audited and independently reproduced 5/5"
     },
     {
       "id": "M4",
