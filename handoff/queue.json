@@ -1,0 +1,67 @@
+{
+  "project": "Book Reader Tracker",
+  "updated": "2026-10-21",
+  "status_vocabulary": [
+    "OPEN",
+    "IN_PROGRESS",
+    "DELIVERED",
+    "VERIFIED",
+    "BLOCKED"
+  ],
+  "items": [
+    {
+      "id": "M3",
+      "title": "M3 Progress Logger",
+      "order": "work-orders/M3_WORK_ORDER_v1.0.md",
+      "status": "OPEN",
+      "receipt": null,
+      "note": "Never delivered. INT-1 currently runs a temporary M1-backed stand-in in wiring.dart. Build the real module, replace the stand-in, re-run the end-to-end suite."
+    },
+    {
+      "id": "INT2-APK",
+      "title": "Build the installable Android app (APK)",
+      "order": "work-orders/INT2_WORK_ORDER_v1.0.md",
+      "status": "BLOCKED",
+      "receipt": null,
+      "note": "Needs an Android toolchain (Java + Android SDK + Gradle). Not present in the sandbox. Widget sources are already delivered."
+    }
+  ],
+  "done": [
+    {
+      "id": "M1",
+      "status": "VERIFIED",
+      "version": "v1.0.2",
+      "note": "open fix order F3 -> v1.0.3"
+    },
+    {
+      "id": "M2",
+      "status": "VERIFIED",
+      "version": "v1.0"
+    },
+    {
+      "id": "M4",
+      "status": "VERIFIED",
+      "version": "v1.0"
+    },
+    {
+      "id": "M5",
+      "status": "VERIFIED",
+      "version": "v1.0"
+    },
+    {
+      "id": "M6",
+      "status": "VERIFIED",
+      "version": "v1.0"
+    },
+    {
+      "id": "M7",
+      "status": "VERIFIED",
+      "version": "v1.0"
+    },
+    {
+      "id": "INT-1",
+      "status": "VERIFIED",
+      "version": "v1.0.1"
+    }
+  ]
+}
