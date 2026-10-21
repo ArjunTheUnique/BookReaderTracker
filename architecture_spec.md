@@ -1,12 +1,13 @@
 # Book Reader Tracker — Architecture Specification
 
-**Version:** v1.3
+**Version:** v1.4
 **Last updated:** 2026-10-21
 **Source:** Gate 4 Master System Design Document, revised through the Gate 5B module audits
 
 > This is the canonical, versioned home of the finalized design. It is plain Markdown on purpose, so it stays readable and hand-editable years from now with no AI.
 
 ## Change log
+- v1.4 (2026-10-21) — M3 verified; INT-1 v1.0.1 verified (compiles; e2e 6/6). Wiring swap from the temporary M1ProgressLogger stand-in to the real M3 module is outstanding.
 - v1.3 (2026-10-21) — M4 verified; EPUB pagination locked (ADR-016); integration workstream defined (ADR-017); `goal_pages` source clarified; corrected pins confirmed by real builds.
 - v1.2 (2026-10-20) — M1 v1.0.2 and M2 v1.0 verified; ADR-014 (idempotent replay) and ADR-015 (injectable ports) added.
 - v1.1 (2026-10-19) — M1 v1.0.2 verified; corrected pins; build.yaml requirement; ADR-010…013 added.
@@ -114,12 +115,12 @@ M7 renders view-models read from M1/M4 (never writes). M2, M3, M5, M6 sit above 
 |---|---|
 | M1 Library Store | **VERIFIED v1.0.2** (5/5, independently reproduced) — open fix order F3 → v1.0.3 |
 | M2 Book Intake | **VERIFIED v1.0** (5/5, independently reproduced) |
-| M3 Progress Logger | **NOT DELIVERED** — work order issued |
+| M3 Progress Logger | **VERIFIED v1.0** (5/5, independently reproduced) — wiring swap to the real module outstanding |
 | M4 Daily Engine | **VERIFIED v1.0** (5/5, independently reproduced) |
 | M5 Widget Bridge | **VERIFIED v1.0** (5/5, independently reproduced) |
 | M6 Backup Vault | **VERIFIED v1.0** (5/5, independently reproduced) |
 | M7 Grid Presenter | **VERIFIED v1.0** (5/5, independently reproduced) |
-| INT-1 App Shell | **FAIL** — does not compile (2 adapter defects); fix order issued → v1.0.1 |
+| INT-1 App Shell | **VERIFIED v1.0.1** (compiles; end-to-end 6/6, independently reproduced) |
 | INT-2 Widget & Packaging | Sources delivered; **APK not built** (no Android SDK) |
 
 **The verification rule:** every module is checked twice — read against its contract, and its tests re-run in a second, independent environment. A receipt that cannot be reproduced is a claim, not evidence.
