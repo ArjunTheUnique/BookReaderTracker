@@ -1,6 +1,6 @@
 // ============================================================
 // PLATFORM EDGE — M2 Book Intake adapters
-// Version Stamp : v1.0
+// Version Stamp : v1.0.1  (compile fix: file_picker 13 API)
 // Pairs with    : src/modules/m2_book_intake.dart
 // ------------------------------------------------------------
 // WHY THIS FILE EXISTS
@@ -49,18 +49,22 @@ class M1LibraryStorePort implements LibraryStorePort {
 class FilePickerFileAccess implements FileAccess {
   @override
   Future<PickedFile> pickAndRead() async {
-    final FilePickerResult? result =
-        await FilePicker.platform.pickFiles(withData: true);
-    if (result == null || result.files.isEmpty) {
+    // file_picker 13: a STATIC pickFile() returns one PlatformFile, and
+    // the bytes are read with readAsBytes() (there is no .bytes field).
+    final PlatformFile? picked = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: const <String>['pdf', 'epub'],
+    );
+    if (picked == null) {
       // A cancelled picker is treated as a refused permission (C7).
       throw FileAccessDenied('no file selected');
     }
-    final PlatformFile f = result.files.first;
-    final Uint8List? bytes = f.bytes;
-    if (bytes == null) {
-      throw FileAccessDenied('file bytes unavailable (permission?)');
+    try {
+      final Uint8List bytes = await picked.readAsBytes();
+      return PickedFile(name: picked.name, bytes: bytes);
+    } catch (e) {
+      throw FileAccessDenied('file bytes unavailable (permission?): $e');
     }
-    return PickedFile(name: f.name, bytes: bytes);
   }
 
   @override

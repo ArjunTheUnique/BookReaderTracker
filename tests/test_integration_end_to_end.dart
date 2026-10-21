@@ -1,6 +1,6 @@
 // ============================================================
 // INTEGRATION PASSPORT — INT-1 End-to-End Test
-// Version Stamp : v1.0
+// Version Stamp : v1.0.1  (patched from v1.0 — see PATCH NOTE below)
 // Files: src/main.dart · src/app/app_shell.dart · src/app/routes.dart
 //        src/app/wiring.dart · tests/test_integration_end_to_end.dart
 // ------------------------------------------------------------
@@ -14,6 +14,18 @@
 //   wiring's M3 seam (ProgressLoggerPort) is exercised through its
 //   temporary M1-backed stand-in.
 // 2 AM HINT : `flutter test tests/test_integration_end_to_end.dart`.
+//
+// PATCH NOTE (v1.0.1)
+//   Two adapter-file compile defects are fixed. They were invisible to
+//   the module suites (which use fakes) and only appeared when wiring.dart
+//   first imported the adapters:
+//     1. m6_backup_vault_adapters.dart — the `cryptography` package also
+//        exports a `Cipher`, colliding with M6's own `Cipher` port. The
+//        crypto import is now prefixed `as crypto`.
+//     2. m2_book_intake_adapters.dart — was written against a pre-13
+//        file_picker API. It now uses the 13.1.0 static FilePicker.pickFile()
+//        and PlatformFile.readAsBytes().
+//   No module contract, error code or port definition changed.
 // ============================================================
 
 import 'package:drift/drift.dart' show driftRuntimeOptions;
